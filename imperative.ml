@@ -23,7 +23,7 @@ let imprime_monome coeff degre =
 let imprime_polynome p =
   for i = 0 to vect_lengh p - 1 do imprime_monome p.(i) i done;;
 
-let compteur = ref 0;;
+let compteur = ref 0;
 (* !compteur;; *)
 compteur := 2;;
 compteur := !compteur + 1
