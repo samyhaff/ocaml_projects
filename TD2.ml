@@ -27,3 +27,12 @@ let rec floyd2 f x y n = match x, y with
   |a, b when a = b -> n
   |a, b -> floyd2 f (f x) (f (f y)) n + 1
 in floyd2 f x0 (f x0) (n + 1);;
+
+let rec hanoi n i j k =
+  if n = 1 then print_string ("\n deplacer le disque de la tour"^" "^string_of_int(i)^" "^"a la tour"^" "^string_of_int(k)^" ")
+  else
+    begin
+      hanoi (n - 1) i k j;
+      print_string ("\n deplacer le disque de la tour"^" "^string_of_int(i)^" "^"a la tour"^" "^string_of_int(k)^" ");
+      hanoi (n - 1) k i j;
+    end;;

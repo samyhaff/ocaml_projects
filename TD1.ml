@@ -10,14 +10,16 @@ let fib n =
     |n -> fibAux (n - 1) (a + b)
   in fibAux n 0 1;;
 
-let rec nombreChiffres n =
-  let rec nombreChiffresAux n acc = match n with
+let nombreChiffres n =
+  let rec nombreChiffresAux n b acc = match n with
     |0 -> acc
-    |n -> nombreChiffresAux (n / 10) (acc + 1)
-  in nombreChiffresAux n 0;;
+    |n -> nombreChiffresAux (n / b) (acc + 1)
+  in nombreChiffresAux n b 0;;
 
-let nombreChiffresBase a b =
-  1 + int_of_float ( log ( float_of_int a )/. log ( float_of_int b ));;
+let implication a b =
+  not b || a;;
+
+let max4 x y z t = max max x y z t;;
 
 let decurrifier f =
   fun (a, b) - > f a b;;
