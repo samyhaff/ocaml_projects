@@ -41,3 +41,13 @@ let rec vrai f = function
 let rec concatenation l1 l2 = match l1 with
   |[] -> l2
   |t::q -> t::(concatenation q l2);;
+
+let rec exists f l = match l with
+  |[] -> false
+  |t::q when f t = true -> true
+  |t::q -> exists f q;;
+
+let rec pourTout f l = match l with
+  |[] -> true
+  |t::q when f t = False -> false
+  |t::q -> f q;;
