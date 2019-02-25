@@ -51,3 +51,17 @@ let rec pourTout f l = match l with
   |[] -> true
   |t::q when f t = False -> false
   |t::q -> f q;;
+
+let rec purge l = match l with
+  |[] -> []
+  |t::q when mem t q = true -> purge q
+  |t::q -> t::(purge q);;
+
+let rec eliminate a l = match l with
+  |[] -> []
+  |t::q when t = a -> eliminate q
+  |t::q -> t::(eliminate a q);;
+
+let rec purge l = match l with
+  |[] -> []
+  |t::q -> t::(eliminate t (purge q));;
