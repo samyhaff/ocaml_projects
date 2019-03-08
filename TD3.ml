@@ -112,4 +112,4 @@ let rec select m l = match l with
 
 let rec selection l = match l with
   |[] -> []
-  |a -> (minimun l)::(selection (select (minimun l) l));;
+  |a -> (minimun l)::(selection (select (minimun l) l));; 
