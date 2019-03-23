@@ -109,4 +109,35 @@ let dichotomique t x =
     if t.(m) = x then m
     else if t.(m) > x then dichotomiqueAux t x l m
     else dichotomiqueAux t x m r
-  in dichotomiqueAux t x 0 n;;
+in dichotomiqueAux t x 0 n;;
+
+(* arbres binaires *)
+
+(* un abre binaire est soit le graphe vide soit un sous arbre suivi d'un noeud et d'un sous arbre *)
+
+(* un arbre binaire strict est soit une feuille soit un noeud encadré par 2 arbres binaires stricts *)
+
+type 'a arbre =
+  (* aucun noeud privilegié par rapport aux autres *)
+  |Vide
+  |Noeud of 'a * 'a arbre * 'a arbre;;
+
+type ('a, 'b) arbre =
+  (* etiquette des noeuds différente de celle des feuilles *)
+  |Feuille of 'a
+  |NoeudInterne of 'b * ('a, 'b) arbre * ('a, 'b) arbre;;
+
+let a = Noeud('+', Noeaud('*', Feuille(3), Feuille(4)), Feuille(5))
+
+type 'a arbre =
+  (* seules les feuilles portnent une etiquette *)
+  |Feuille of 'a
+  |NoeudInterne of 'a arbre * 'a arbre;;
+
+let rec nombreFeuilles arbre = match arbre with
+  |Feuille(a) -> 1
+  |NoeudInterne(a, b) -> nombreFeuilles a + nombreFeuilles b;;
+
+let rec profondeur arbre = match arbre with
+  |Feuille(a) -> 0
+  |NoeudInterne(a, b) -> 1 + max (profondeur a) (profondeur b);;
