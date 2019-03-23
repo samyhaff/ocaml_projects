@@ -151,6 +151,13 @@ let rec minimun l = match l with
   |[a] -> a
   |t::q -> min t (minimun q);;
 
+let select m l =
+  let rec selectAux m l k = match l, k with
+    |[], c -> []
+    |t::q, c when (t = m && c = 1) -> selectAux m q (c + 1)
+    |t::q, c -> t::(selectAux m q c)
+  in selectAux m l 0;;
+
 let rec select m l = match l with
   |[] -> []
   |t::q when t = m -> select m q
@@ -159,3 +166,16 @@ let rec select m l = match l with
 let rec selection l = match l with
   |[] -> []
   |a -> (minimun l)::(selection (select (minimun l) l));;
+
+let racine n
+  let rec racineAux n r = match n with
+    |a when a * a = n -> a
+    |a -> racineAux n (r + 1)
+  in racineAux n 0;;
+
+let dichotomique n =
+  let rec dichotomiqueAux n a b = match a, b with
+    |x, y when x * x >= n -> x
+    |x, y when y * y <= n -> y
+    |x, y -> dichotomiqueAux n ((x + y) / 2) ((y - x) / 2)
+  in dichotomiqueAux n 0 n;;
