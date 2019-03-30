@@ -105,7 +105,7 @@ mystere t;;
 let dichotomique t x =
   let n = Array.length t - 1 in
   let rec dichotomiqueAux t x l r =
-    let m = l + ()(l - r) / 2) in
+    let m = l + (l - r) / 2) in
     if t.(m) = x then m
     else if t.(m) > x then dichotomiqueAux t x l m
     else dichotomiqueAux t x m r
@@ -141,3 +141,37 @@ let rec nombreFeuilles arbre = match arbre with
 let rec profondeur arbre = match arbre with
   |Feuille(a) -> 0
   |NoeudInterne(a, b) -> 1 + max (profondeur a) (profondeur b);;
+
+(* exercice 4 *)
+
+type arbre = Vide | Noeud of arbre * arbre;;
+
+let rec genereComplet n =
+  if n = 0 then Noeud(Vide, Vide)
+  else Noeud(genereComplet n - 1, genereComplet n - 1);;
+
+(* test complet: utiliser la formule du cours *)
+
+type ('f, 'n) arbre =
+  |Feuille of 'f
+  |NoeudInterne of ('f, 'n) arbre * 'n * ('f, 'n) arbre;;
+
+(* différence entre les 2 types: le 2e permet aux feuilles et au noeuds internes d'être de type différents *)
+
+let arbre1 = NoeudInterne(NoeudInterne(NoeudInterne(Feuille(8), '+', Feuille(2))), '*', Feuille(3))
+
+(* arbre2 impossible *)
+
+let profondeurMin arbre = match arbre with
+  |Noeud(Vide, Vide) -> 0
+  |Noeud(arbre1, arbre2) -> 1 + min(profondeurMin arbre1, profondeurMin arbre2);;
+
+type 'a arbre = Vide | Feuille of 'a | Noeaud of 'a * 'a arbre * 'a arbre;;
+
+let rec nFeuilles arbre = match arbre with
+  |Feuille(_) -> 1
+  |Noeud(a, a1, a2) -> nFeuilles a1 + nFeuilles a2;;
+
+let rec cheminement arbre = match arbre with
+  |Feuille(_) -> 1
+  |Noeud(a, a1, a2) -> 1 + nFe
