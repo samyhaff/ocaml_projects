@@ -172,6 +172,58 @@ let rec nFeuilles arbre = match arbre with
   |Feuille(_) -> 1
   |Noeud(a, a1, a2) -> nFeuilles a1 + nFeuilles a2;;
 
-let rec cheminement arbre = match arbre with
-  |Feuille(_) -> 1
-  |Noeud(a, a1, a2) -> 1 + nFe
+let cheminement a =
+  let rec aux acc a = match a with
+    |Vide -> 0
+    |Noeud(Vide, Vide) -> acc
+    |Noeud(a1, a2) -> aux (acc + 1) a1 + aux (acc + 1) a2
+  in aux 0 a;;
+
+let rec Strahler a =
+  |Vide -> 0
+  |Noeud(Vide, Vide) -> 1
+  |Noeud(a1, a2) -> let u = Strahler in let v = Strahler in if u = v then u + 1 else max u v;;
+
+(* nb de Stahler min: arbre avec une branche principale et dont les embranchements font intervenir cette branche et des feuilles *)
+(* ce sont des arbres filiformes *)
+
+(* dém théoritque sur les arbres => réaction sur la hauteur *)
+
+(* il y a h - 1 embranchements sur un arbre filiforme et pour chaque embranchement, on choisit de mettre une feuille à droite ou à gauche *)
+
+type 'a arbre = Vide | Noeud of 'a * 'a arbre * 'a arbre;;
+
+let rec prefixe a = match a with
+  |Vide -> []
+  |Noeud(x, a1, a2) -> a::(prefixe a1)@(prefixe a2);;
+
+let rec postfixe a = match a with
+  |Vide -> []
+  |Noeud(x, a1, a2) -> (preifxe a1)@(prefixe a2)@[x];;
+
+let rec postfixe a = match a with
+  |Vide -> []
+  |Noeud(x, a1, a2) -> (preifxe a1)@[x]@(prefixe a2);;
+
+let rec racines l = match l with
+  |[] -> []
+  |[]::q -> racines q
+  |Noeud(a, a1, a2)::q -> a::(racines q);;
+
+let rec fils l = match l with
+  |[] -> []
+  |[]::q -> racines q
+  |Noeud(a, a1, a2)::q -> a1::a2::(racines q);;
+
+a = Noeud(true, Noeud(false, Vide, Noeud(true, Vide, Vide)), Noeud(false, Vide, Noeud(false, Vide, Noeud(true, Vide, Vide))))
+
+let rec cherche n E =
+  |Noeud(a, Vide, Vide) -> false
+  |Noeud(a, a1, a2) -> if a = x then true else (if a mod 2 = 0 then cherche n / 2 a1 else cherche n / 2 a2);;
+
+(* recherche d'un élement dans une liste: 0(n) *)
+(* recherche d'un élement dans un  arbre radix: log_2(x) où x est le nb de chiffre dans l'écriture en base 2 *)
+
+let rec cherche n e = match n, e with
+  |0 , Noeud(h, g, d) -> h
+  |a, Noeud()
