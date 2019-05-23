@@ -1,0 +1,65 @@
+open Array
+
+(* 2^(n - 1) découpes *)
+
+let prix = [|1|]
+
+let maximum tableau =
+  let t = Array.length tableau in
+  let m = ref tableau[0] in
+  let k = ref 0 in
+  for i = 0 to t
+  do
+    if tableau.(i) > !m then
+      begin
+        m := tableau.(i);
+        k := i;
+      end;
+  done;
+  (!m, !k);;
+
+let calculeR n prix =
+  let stock = Array.create n 0 in
+  let decoupes = Array.create n 0 in
+  for i = 0 to n
+  do
+    let u, v = maximum Array.sub prix 0 i in
+    begin
+      stock.(i) <- u + stock.(n - v);
+      decoupes.(i) <- i;
+    end;
+  done;
+  (stock.(n), decoupes);;
+
+(* rendu de monaie *)
+
+let p = [|1; 2; 5; 10; 20; 50|]
+
+let maxPaie t p =
+  let s = Array.length p in
+  let r = Array.create 0 s in
+  let m = ref p.(0) in
+  for i = 0 to n
+  do
+    begin
+      if n >= p.(i) then r.(i) = p.(i);
+      if p.(i) > !m then m := r.(i)
+  m;;
+
+let renduMonaieGlouton n p =
+  let pieces = Array.create n 0 in
+  let compte = ref n in
+  for i = 0 to n
+  do
+    begin
+      pieces.(i) <- maxPaie compte p;
+      compte := !compte - pieces.(i);
+    end;
+  done;
+  pieces;;
+
+let renduMonaieDynamique n p =
+  let t = Array.length p in
+  let s = Array.make_matrix n n 0 in
+  for i = 0 to n do
+    for k = 0 to n do

@@ -1,0 +1,97 @@
+(* arbre *)
+
+type ('f, 'n, 'b) arbre =
+  |Feuille of 'f
+  |Noeud of 'n * 'b * (('f, 'n, 'b) arbre) * 'b *(('f, 'n, 'b) arbre);;
+
+type ('f, 'n) arbre =
+  |Feuille of 'f
+  |Noeud of 'n * (('f, 'n) arbre) * (('f, 'n) arbre)
+
+let fils_gauche a = match a with
+  |Feuille _ -> failwith "c'est une feuille"
+  |Noeud(_, g, d) -> g;;
+
+let rec branchedroite a =
+  |F _ -> []
+  |N(a, g, d) -> a::branchedroite d;;
+
+let rec feuilles a = match a with
+  |F a -> [a]
+  |N(_, g, d) -> (feuilles g) @ (feuilles d)
+
+let rec test_squelette a b = match a, b with
+  |F _, F _ -> true
+  |N(_, g, d), N(_, g', d') -> (test_squelette g g') && (test_squelette d d')
+  |_, _ -> false
+
+let sosa a =
+  let rec aux x a = match a with
+    |F(a) -> F(a, x)
+    |N(a, g, d) -> N((a, x), aux (2 * x) g, aux (2 * x + 1), d)
+  in aux 1 a;;
+
+let rec strahler a = match a with
+  |F _ -> 1
+  |N(_, g, d) ->
+    if strahler g = strahler d then strahler g + 1
+    else max (strahler g) (strahler d);;
+
+type arbre = Vide | Noeud of abre * arbre;;
+
+let rec genereComplet n = match n with
+  |0 -> Noeud(Vide, Vide)
+  |n -> Noeud(genereComplet n - 1, genereComplet n - 1);;
+
+let rec hauteur a = match a with
+  |Noeud(Vide, Vide) -> 0
+  |N(g, d) -> max (hauteur g) (hauteur d)
+
+let rec compterFeuilles a = match a with
+  |Noeud(Vide, Vide) -> 1
+  |Noeud(g, d) -> compterFeuilles g + compterFeuilles d;;
+
+let rec testerComplet a =
+  let n = compterFeuilles a in
+  let h = hauteur a in
+  int_of_float (2. ** ( float_of_int h )) = n ;;
+
+type 'a arbre =
+  |Feuille of 'a
+  | Noeud of 'a * ('a arbre) * ('a arbre);;
+
+let rec profondeurMin a = match a with
+  |Feuille _ -> 0
+  |Noeud(_, g, d) -> min (profondeurMin g) (profondeurMin d) + 1;;
+
+let cheminement a =
+  let rec aux a acc = match a with
+    |Vide -> 0
+    |Feuille _ -> acc
+    |Noeud(_, g, d) -> acc + aux g (acc + 1) + aux d (acc + 1);;
+
+(* programmation dynamique *)
+
+let prix = [|0;1;5;3;8;5;3;4;1;10;8|];;
+
+let coupeDuBois prix n =
+  let stock = Array.make (n + 1) 0 in
+  let decoupe = Array.make (n  + 1) [] in
+  let u = Array.length prix in
+  for i = 1 to n
+  do
+    let k = min i (u - 1) in
+    let maxi = ref 0 in
+    let decoupeOpt = ref [] in
+    for j = 1 to k
+    do
+      if !maxi < prix.(j) + stock.(i - j) then
+        begin 
+          maxi := prix .( j) + stock .(i -j );
+          decoupeOpt := j :: decoupe .(i -j );
+        end;
+    done;
+    stock.(i) <- !maxi;
+    decoupe.(i) < !decoupeOpt
+  done;
+  (stock.(n), decoupe.(n))

@@ -227,3 +227,7 @@ let rec cherche n E =
 let rec cherche n e = match n, e with
   |0 , Noeud(h, g, d) -> h
   |a, Noeud()
+
+(* Révisions *)
+
+type arbre = Vide | Noeud of arbre * arbre;;

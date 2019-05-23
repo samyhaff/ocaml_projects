@@ -30,8 +30,10 @@ let rec reduireRepr p =
   do
     n := !n - 1;
   done;
-  Array.sub p 0 n;
-  p;
+  begin
+    Array.sub p 0 n;
+  end;;
+  p;;
 
 let somme p q =
   let n = max (degre p) (degre q) in
@@ -85,6 +87,6 @@ let karatsuba p q = match Array.length p with
     let r3 = karatsubda p2 q2 in
     let r2 = karatsuba (somme p1 p2) (somme q1 q2) in
     let xnr1 = multiplicationNaive r1 xn in
-    let r4 = multiplicationNaive (somme (somme (r1 + r2) -r3)) xm in
+    let r4 = multiplicationNaive (somme (somme (r1  r2) -r3)) xm in
     let r = somme (somme xnr1 r3) r4 in
     r;;
