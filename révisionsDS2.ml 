@@ -86,7 +86,7 @@ let coupeDuBois prix n =
     for j = 1 to k
     do
       if !maxi < prix.(j) + stock.(i - j) then
-        begin 
+        begin
           maxi := prix .( j) + stock .(i -j );
           decoupeOpt := j :: decoupe .(i -j );
         end;
@@ -95,3 +95,41 @@ let coupeDuBois prix n =
     decoupe.(i) < !decoupeOpt
   done;
   (stock.(n), decoupe.(n))
+
+let a = [|[|1;1;1;−8;−8;−12|]; [|−4;−4;1;−4;17;79|]; [|−8;−4;1;−4;−4;−4|];[|−8;−4;1;1;1;1|]|]
+
+let calculP a =
+  let n = Array.length a in
+  let m = Array.length a.(0) in
+  let p = Array.make_matrix n m a.(0).(0) in
+  for i = 1 to n - 1 do
+    p.(i).(0) <- p.(i - 1).(0) + a.(i).(0)
+  done;
+  for j = 1 to m - 1 do
+    p.(0).(j) <- p.(0).(j - 1) + a.(0).(j)
+  done;
+  for i = 1 to n - 1 do
+    for j = 1 to m - 1 do
+      p.(i).(j) <− a.(i).(j) + max p.(i−1).(j) p.(i).(j−1)
+    done;
+  done;
+  p;;
+
+let backtrack p =
+  let n, m = Array.length p, Array.length p.(0) in
+  let i = ref (n - 1) in
+  let j = ref (m - 1) in
+  let q = ref [] in
+  while !i > 0 && !j > 0
+  do
+    if p(!i - 1).(!j) > p.( !i).( !j−1) then
+      begin
+        q := (!i - 1, !j) :: !q;
+        i := !i - 1;
+      end;
+    else
+      begin
+        q := (!i, !j - 1) :: !q;
+        j := !j - 1;
+      end;
+  done;
