@@ -2,6 +2,7 @@ type 'a arbre = Vide | Noeud of 'a * 'a arbre * 'a arbre
 
 let rec insertion a x = match a with
   |Vide -> Noeud(x, Vide, Vide)
+  |Noeud(y, g, d) when y = x -> a
   |Noeud(y, g, d) when x < y -> Noeud(y, insertion g x, d)
   |Noeud(y, g, d) -> Noeud(y, g, insertion d x);;
 
@@ -55,3 +56,29 @@ let rec parcous_suffixe arbre = match arbre with
 let rec parcours_infixe arbre = match arbre with
   |Nil -> []
   |Noeud(r, g, d) -> parcours_infixe g @ [r] @ parcours_infixe;;
+
+let rec est_complet a = match a with
+  |Nil -> true
+  |Noeud(x, g, d) -> est_complet g && est_complet d && (hauteur g = hauteur d);;
+
+let complet_bis a =
+  let rec complet_aux a = match a with
+  	|Nil -> true,0
+  	|Noeud(r,g,d) ->
+  	let (b1, h1) = complet_aux g
+  	and (b2,h2) = complet_aux d in
+  	(b1 && b2 && h1=h2, 1+ max h1 h2)
+  in let (b,_) = complet_aux a  in b;;
+
+let rec liste_profondeur arbre k = match (arbre, k) with
+  |(Nil, _) -> []
+  |(Noeud(x, g, d), 0) -> [x]
+  |(Noeud(x, g, d), k) -> (liste_profondeur g (k - 1)) @ (liste_profondeur d (k - 1));;
+
+let rec appartient a x = match a with
+  |Nil -> false
+  |Noeud(r, g, d) -> r = x || appartient g x || appartient d x
+
+let rec map_ab f a = match a with
+  |Nil -> Nil
+  |Noeud(r, g, d) -> Noeud(f r, map_ab g, map_ab d);;
