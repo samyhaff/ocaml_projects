@@ -23,7 +23,7 @@ let ajouteArete graphe i j =
 
 let supprimerArete graphe i j = 
   if presenceArete graphe i j then 
-    graphe.(i) <- enleverElt j (graphe.(i));; (* cas d'un graphe orienté *)
+    graphe.(i) <- enleverElt j (graphe.(i));; (* cas d'un graphe orienté *)é
 
 (* matrice d'adjacence *)
 
@@ -143,61 +143,4 @@ let floydWarshall w =
     m;;
 
 (* Dijkstra *) 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
