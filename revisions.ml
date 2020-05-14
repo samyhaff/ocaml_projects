@@ -41,7 +41,9 @@ let base x n =
     |x -> aux (x / n) ((x mod n)::acc)
   in aux x [];;
 
-base 13 2;;
+let rec eval_base b l = match l with
+  | [] -> 0
+  | h::t -> h + b * (eval_base b t) ;;
 
 let fibo n =
   let rec aux n acc1 acc2 = match n with
@@ -50,7 +52,7 @@ let fibo n =
     |n -> aux (n - 1) acc2 (acc1 + acc2)
   in aux n 0 1;;
 
-(* horner *)
+let eval poly x = eval_base x poly;;
 
 let recherche_dicho x tab =
   let rec aux i j = 
@@ -62,16 +64,38 @@ let recherche_dicho x tab =
 
 type arbre = Vide | Noeud of int * arbre * arbre;;
 
-let rec max_arbre a = match a with 
-  |Vide -> failwith "abre vide" 
-  |Noeud(x, Vide, Vide) -> x
-  |Noeud(x, g, d) -> 
-      let a = max_arbre g in 
-      let b = max_arbre d in 
-        max a b;;
+let rec max_min a = match a with
+  | Vide -> min_int, max_int
+  | Noeud(x,Vide, Vide) -> x,x
+  | Noeud(x,g,d) -> let max_g,min_g = max_min g and max_d,min_d = max_min d in
+        (max max_g (max max_d x), min min_g (min min_d x)) ;;
 
+(* abr *)
 
+let rec cherche_abr e a = match a with
+  | Vide -> false
+  | Noeud(x,g,d) when x = e -> true
+  | Noeud(x,g,d) when x > e -> cherche_abr e g
+  | Noeud(x,g,d) -> cherche_abr e d;;
 
+let rec max_sum a = match a with
+  | Vide -> 0
+  | Noeud(x,g,d) -> x + max (max_sum g) (max_sum d);;
+
+(* hierarchie *)
+
+type arbre_expr = Value of int | Op_bin of string * arbre_expr * arbre_expr | Op_un of string * arbre_expr;;
+
+(* parcours d'expression arithmétiques *)
+
+let accessible g s =
+  let n = Array.length g in
+  let dejavu = Array.make n false in
+  let rec visite l = match l with
+    | [] -> ()
+    | h::t when dejavu.(h) -> visite t
+    | h::t -> dejavu.(h) <- true ; visite g.(h) ; visite t
+  in visite [s] ; dejavu ;;
 
 
 
