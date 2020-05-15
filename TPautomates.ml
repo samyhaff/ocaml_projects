@@ -84,17 +84,56 @@ let rec mon_assoc_2 c l = match l with
   |(x, q)::f when x = c -> q::(mon_assoc_2 c f)
   |t::q -> mon_assoc_2 c q 
 
-let calul_nondet x b = 
-  let a = complete b in
-  let n = String.length x in 
-  let rec aux q i = match i with
-    |i when i = n -> q
-    |i -> aux (accessible_2 q x.[i]) (i + 1)
-  in aux [a.initial] 0;;
+(* let calul_nondet x b = 
+   let a = complete b in
+   let n = String.length x in 
+   let rec aux q i = match i with
+   |i when i = n -> q
+   |i -> aux (accessible_2 q x.[i]) (i + 1)
+   in aux [a.initial] 0;; *)
 
 let a3 = {taille = 5 ; initial = 0 ; transitions = [|[('a', 1); ('a', 2); ('b', 2)]; [('a', 1)]; [('a', 3); ('b', 4)]; [('b', 4)]; [('a', 3)]|] ; final = [|false; true; false; true; false|] };;
 
-calcul_nondet "aa" a3;;
+let calcul_nondet a u = 
+  let n = String.length u in 
+  let rec aux q i l = match l with
+    |_ when i = n -> a.final.(q)
+    |[] -> false
+    |(c, q')::trans when c = u.[i] -> (aux q' (i + 1) a.transitions.(q')) || (aux q i trans)
+    |(c, q')::trans -> aux q i trans
+  in aux a.initial 0 (a.transitions.(a.initial));;
+
+calcul_nondet a3 "aa";;
+calcul_nondet a3 "aba";;
+calcul_nondet a3 "bab";;
+
+let tab_to_int t =
+  let n = Array.length t in
+  let rec boucle k = match k with
+    | _ when k=n -> 0
+    | _ when t.(k) -> 1 + 2*(boucle (k+1))
+    | _ -> 2 * boucle (k+1)
+  in boucle 0 ;; 
+
+let int_to_tab k n = 
+  let t = Array.make 0 n in 
+  let rec boucle i k = match k with 
+    |0 -> t
+    |_ when k mod 2 = 0 -> boucle (i + 1) (k / 2)
+    |_ -> t.(i) <- true; boucle (i + 1) (k / 2)
+  in boucle 0 k;;
+
+let rec puiss2 n = match n with 
+  |0 -> 1
+  |_ when n mod 2 = 0 -> let r = puiss2 (n / 2) in r * r
+  |_ -> let r = puiss2 (n / 2) in 2 * r * r;;
+
+let int_non_vide t1 t2 = 
+  let n = Array.length t1 in 
+  let rec boucle k = 
+    ((k < n) && (t1.(k) && t2.(k))) || boucle (k + 1) 
+  in boucle 0;;
+
 
 
 
