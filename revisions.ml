@@ -16,8 +16,6 @@ let rec tri_insertion l = match l with
   |[] -> []
   |t::q -> insere t (tri_insertion q);;
 
-(* tri rapide *)
-
 let list_rev l = 
   let rec aux l acc = match l with
     |[] -> acc
@@ -82,12 +80,6 @@ let rec max_sum a = match a with
   | Vide -> 0
   | Noeud(x,g,d) -> x + max (max_sum g) (max_sum d);;
 
-(* hierarchie *)
-
-type arbre_expr = Value of int | Op_bin of string * arbre_expr * arbre_expr | Op_un of string * arbre_expr;;
-
-(* parcours d'expression arithmétiques *)
-
 let accessible g s =
   let n = Array.length g in
   let dejavu = Array.make n false in
@@ -97,9 +89,42 @@ let accessible g s =
     | h::t -> dejavu.(h) <- true ; visite g.(h) ; visite t
   in visite [s] ; dejavu ;;
 
+let rec tri_rapide l0 = 
+  let rec decoupe pivot l = match l with 
+    |[] -> [], []
+    |h::t -> let l1, l2 = decoupe pivot t in  
+          if h < pivot then (h::l1, l2) else (l1, h::l2) in 
+    match l0 with 
+      |[] -> []
+      |pivot::suite -> let l1, l2 = decoupe pivot suite in 
+            (tri_rapide l1)@(pivot::(tri_rapide l2));;
 
+let hierarchie arbre = 
+  let rec boucle file = match file with 
+    |[] -> []
+    |(Vide)::t -> boucle t
+    |(Noeud(x, g, d))::t -> x::(boucle (t @ [g; d]))
+  in  boucle arbre;;
 
+type arbre_expr = Value of int | Op_bin of string * arbre_expr * arbre_expr | Op_un of string * arbre_expr;;
 
+let rec prefixe ex = match ex with 
+  |Value v -> string_of_int v
+  |Op_bin(s, g, d) -> s ^ "(" ^ (prefixe g) ^ "," ^ (prefixe d) ^ ")"
+  |Op_un(s, e) -> s ^ "(" ^ (prefixe e) ^ ")";;
+
+let ex = Op_bin("-", Value(3), Op_bin("+", Value(5), Value(2)));;
+prefixe ex;;
+
+let rec infixe ex = match ex with
+  | Value v -> string_of_int v
+  | Op_bin(s,g,d) -> "("^(infixe g)^")" ^ s ^ "("^(infixe d)^")"
+  | Op_un(s,e) -> s ^"("^(infixe e)^")" ;;
+
+let rec suffixe ex = match ex with
+  | Value v -> string_of_int v
+  | Op_bin(s,g,d) -> "("^(suffixe g)^","^(suffixe d)^")" ^s
+  | Op_un(s,e) -> "("^(suffixe e)^")" ^s ;;
 
 
 
