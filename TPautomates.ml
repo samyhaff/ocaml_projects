@@ -1,141 +1,65 @@
-type 'a automate = { mutable taille : int ;
-                     mutable initial : int ;
-                     transitions : ('a * int) list array ;
-                     final : bool array };;
+let rec binaire_faible n = match n with
+  |0 -> []
+  |n -> (n mod 2)::(binaire_faible (n / 2));;
 
-let calcul_complet x a = 
-  let n = String.length x in
-  let rec aux i q = match i with 
-    |i when i = n -> q
-    |i -> aux (i + 1) (List.assoc x.[i] a.transitions.(q)) 
-  in a.final.(aux 0 a.initial);; 
+let binaire_fort x = 
+  let rec aux x acc = match x with 
+    |0 -> acc
+    |x -> aux (x / 2) ((x mod 2)::acc)
+  in aux x [];;
 
-let a0 = {taille = 5 ; initial = 0 ; transitions = [|[('a', 1); ('b', 2)]; [('a', 1); ('b', 2)]; [('a', 3); ('b', 4)]; [('a', 2); ('b', 4)]; [('a', 3); ('b', 2)]|] ; final = [|false; true; false; true; false|] };;
+type ('a, 'b) afd = {init: 'a; accept: 'a list; delta: (('a * 'b) * 'a) list};;
 
-calcul_complet "aa" a0;;
-calcul_complet "aba" a0;;
-calcul_complet "bab" a0;;
+let rec mem elt liste = match liste with
+  |[] -> false
+  |t::q when t = elt -> true
+  |t::q -> mem elt q;;
 
-let rec mon_assoc c l = match l with 
-  |[] -> (false, -1)
-  |(x, q)::_ when x = c -> (true, q)
-  |t::q -> mon_assoc c q;;
+let rec mem_fst x l = match l with 
+  |[] -> false 
+  |(a, b)::_ when a = x -> true
+  |(a, b)::q -> mem_fst x q;;
 
-let calcul_det x a = 
-  let n = String.length x in 
-  let i = ref 0 in 
-  let q = ref a.initial in 
-  let flag = ref true in 
-    while (!i < n && !flag) do
-      let b, e = mon_assoc x.[!i] a.transitions.(!q) in 
-        if not b then flag := false 
-        else 
-          begin
-            q := e;
-            i := !i + 1
-          end;
+let rec assoc x l = match l with 
+  |[] -> failwith "element non présent"
+  |(a, b)::_ when a = x -> b 
+  |_::q -> assoc x q;;
+
+let reconnu aut mot = 
+  let rec aux mot q = match mot with  
+    |[] -> q
+    |u::v when mem_fst (q, u) aut.delta -> aux v (assoc (q, u) aut.delta)
+    |u::v -> false
+  in mem (aux mot aut.init) aut.accept;;
+
+
+
+let genere_fort d = 
+  let transitions = ref [] in 
+    for b = 0 to d - 1 do 
+      transitions := ((b, 0), (2 * b) mod d)::(((b, 1), (2 * b + 1) mod d)::(!transitions))
     done;
-    (!flag) && a.final.(!q);;
+    {init = 0; accept = [0]; delta = !transitions};;
 
-a1 = {taille = 5 ; initial = 0 ; transitions = [|[('a', 1); ('b', 2)]; [('a', 1); ('b', 2)]; [('a', 3); ('b', 4)]; [('a', 2); ('b', 4)]; [('a', 3); ('b', 2)]|] ; final = [|false; true; false; true; false|] };;
+type ('a, 'b) afnd = {nd_init : 'a list; nd_accept : 'a list; nd_delta : (('a * 'b) * 'a) list};;
 
-calcul_det "aa" a1;;
-calcul_det "aba" a1;;
-calcul_det "bab" a1;;
+let genere_faible d aut = 
+  let rec aux l = match l with 
+    |[] -> []
+    |((q1, u), q2)::q -> ((q2, u), q1)::(aux q)
+  in {nd_init = aut.accept; nd_accept = [aut.init]; nd_delta = (aux aut.delta)};;
 
-let complete a = 
-  let transitions = Array.append a.transitions [|[]|] in 
-  let n = Array.length a.transitions in 
-    for i = 0 to n - 1 do 
-      if not (fst (mon_assoc 'a' a.transitions.(i))) then 
-        transitions.(i) <- ('a', n)::a.transitions.(i) 
-      else if not (fst (mon_assoc 'b' a.transitions.(i))) then 
-        transitions.(i) <- ('b', n)::a.transitions.(i) 
-    done;
-    {taille = n + 1 ; initial = a.initial ; transitions = transitions ; final = a.final };;
+let rec exists p l = match l with 
+  |[] -> false
+  |x::q when p x -> true
+  |_::q -> exists p q;;
 
-complete a1;;
-
-let rec retirer l x = match l with 
-  |[] -> failwith "liste vide"
-  |[x] -> []
-  |t::q when t = x -> q
-  |t::q -> t::(retirer q x);;
-
-let rec retirer_plusieurs l l' = match l' with  
-  |[] -> l
-  |t::q -> retirer_plusieurs (retirer l t) q;;
-
-let accessible a = 
-  let rec aux vus l = match l with 
-    |[] -> vus
-    |t::q -> let d = List.map snd a.transitions.(t)
-        in let d' = retirer_plusieurs d vus 
-        in aux (d' @ vus) (d' @ q)
-  in aux [a.initial] [a.initial];;
-
-let rec mon_assoc c l = match l with 
-  |[] -> (false, -1)
-  |(x, q)::_ when x = c -> (true, q)
-  |t::q -> mon_assoc c q;;
-
-let rec mon_assoc_2 c l = match l with 
-  |[_] -> []
-  |(x, q)::f when x = c -> q::(mon_assoc_2 c f)
-  |t::q -> mon_assoc_2 c q 
-
-(* let calul_nondet x b = 
-   let a = complete b in
-   let n = String.length x in 
-   let rec aux q i = match i with
-   |i when i = n -> q
-   |i -> aux (accessible_2 q x.[i]) (i + 1)
-   in aux [a.initial] 0;; *)
-
-let a3 = {taille = 5 ; initial = 0 ; transitions = [|[('a', 1); ('a', 2); ('b', 2)]; [('a', 1)]; [('a', 3); ('b', 4)]; [('b', 4)]; [('a', 3)]|] ; final = [|false; true; false; true; false|] };;
-
-let calcul_nondet a u = 
-  let n = String.length u in 
-  let rec aux q i l = match l with
-    |_ when i = n -> a.final.(q)
-    |[] -> false
-    |(c, q')::trans when c = u.[i] -> (aux q' (i + 1) a.transitions.(q')) || (aux q i trans)
-    |(c, q')::trans -> aux q i trans
-  in aux a.initial 0 (a.transitions.(a.initial));;
-
-calcul_nondet a3 "aa";;
-calcul_nondet a3 "aba";;
-calcul_nondet a3 "bab";;
-
-let tab_to_int t =
-  let n = Array.length t in
-  let rec boucle k = match k with
-    | _ when k=n -> 0
-    | _ when t.(k) -> 1 + 2*(boucle (k+1))
-    | _ -> 2 * boucle (k+1)
-  in boucle 0 ;; 
-
-let int_to_tab k n = 
-  let t = Array.make 0 n in 
-  let rec boucle i k = match k with 
-    |0 -> t
-    |_ when k mod 2 = 0 -> boucle (i + 1) (k / 2)
-    |_ -> t.(i) <- true; boucle (i + 1) (k / 2)
-  in boucle 0 k;;
-
-let rec puiss2 n = match n with 
-  |0 -> 1
-  |_ when n mod 2 = 0 -> let r = puiss2 (n / 2) in r * r
-  |_ -> let r = puiss2 (n / 2) in 2 * r * r;;
-
-let int_non_vide t1 t2 = 
-  let n = Array.length t1 in 
-  let rec boucle k = 
-    ((k < n) && (t1.(k) && t2.(k))) || boucle (k + 1) 
-  in boucle 0;;
-
-
-
+let reconnu2 a mot =
+  let rec aux e m delta = match (m, delta) with
+    | ([],_) -> mem e a.nd_accept
+    | (_,[]) -> false
+    | (a1::m1, ((q, c), r)::v) when q = e && c = a1 -> aux r m1 a.nd_delta || aux e m v | (m, _::v) -> aux e m v
+  in exists (function e -> aux e mot a.nd_delta) a.nd_init ;;
 
 
 

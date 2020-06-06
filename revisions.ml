@@ -302,11 +302,11 @@ let presenceArete graphe i j = membre j graphe.(i);;
 
 let ajouteArete graphe i j = 
   if not (presenceArete graphe i j) then 
-    graphe.(i) <- j::graphe.(i);; (* cas d'un graph orienté *)
+    graphe.(i) <- j::graphe.(i);; (* cas d'un graphe orienté *)
 
 let supprimerArete graphe i j = 
   if presenceArete graphe i j then 
-    graphe.(i) <- enleverElt j (graphe.(i));; (* cas d'un graphe orienté *)é
+    graphe.(i) <- enleverElt j (graphe.(i));; (* cas d'un graphe orienté *)
 
 (* matrice d'adjacence *)
 
@@ -386,7 +386,7 @@ let liste_composantes g =
   let rec dfs lst  = function 
     |s when dejavu.(s) -> lst 
     |s -> dejavu.(s) <- true;
-        it_list dfs (s::lst) g.(s) (*it list f a [ b1 ; ... ; bn ] renvoie f (... (f (f a b1) b2) ...) bn ; *)
+        it_list dfs (s::lst) g.(s) (*it list f a [ b1 ; ... ; bn ] renvoie f (... (f (f a b1) b2) ...) bn *)
   and aux comp = function 
     |s when s = Array.length g -> comp 
     |s when dejavu.(s) -> aux comp (s + 1)
@@ -395,7 +395,7 @@ let liste_composantes g =
 
 (* Floyd-Warshall *) 
 
-type poids = Inf | P of int;;
+type poids = Inf | P of int;; 
 
 let somme a b = match a, b with 
   |P x, P y -> P (x + y)
@@ -405,7 +405,7 @@ let minimum a b = match a, b with
   |P x, P y -> P (min x y)
   |P x, Inf -> P x
   |Inf, P x -> P x 
-  |_, _ -> Inf;;
+  |_, _ -> Inf;; 
 
 let infStrict a b = match a, b with 
   |P x, P y -> x < y 
@@ -425,17 +425,4 @@ let floydWarshall w =
     done;
     m;;
 
-(* Dijkstra *) 
-
-
-
-
-
-
-
-
-
-
-
-
-
+(* Dijkstra *)
